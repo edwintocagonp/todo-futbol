@@ -4,8 +4,7 @@ import { PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
 
 import { netTexture } from "../models/geometry";
-import { Ball } from "../models/Models";
-import { BlobShadow } from "./ProductStage";
+import { Ball, BlobShadow } from "./Ball";
 
 const GOAL_Z = -12;
 const POST = 3.66;
@@ -168,7 +167,7 @@ function HeroBall({ kick, onGoal, narrow }: { kick: number; onGoal: () => void; 
   return (
     <>
       <group ref={ball}>
-        <Ball variant={{ id: "hero", name: "", main: "#f4f6f8", second: "#141414" }} detail={5} />
+        <Ball main="#f4f6f8" second="#141414" detail={5} />
       </group>
       <group ref={shadow}>
         <BlobShadow y={0} size={0.34} opacity={0.75} />

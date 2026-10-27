@@ -1,15 +1,11 @@
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import * as THREE from "three";
 
-import { CATEGORIES, DOZEN } from "../content";
+import { CATEGORIES, DOZEN, photo, photoSet } from "../content";
 import type { Product } from "../content";
 import { money, unitPrice, variant } from "../cart";
 import type { CartItem } from "../cart";
-import { ProductStage } from "../scene/ProductStage";
 import { Icon } from "./icons";
 
 type ModalProps = {
@@ -43,6 +39,12 @@ function Sheet({ product, initialVariant, inCart, onClose, onAdd }: ModalProps &
   const unit = unitPrice(product, units);
   const missing = Math.max(0, DOZEN - units);
   const category = CATEGORIES.find((c) => c.id === product.category)?.name;
+  const design = product.category === "uniformes";
+  const stage = useRef<HTMLDivElement>(null);
+  const pick = (id: string) => {
+    setVariantId(id);
+    if ((stage.current?.getBoundingClientRect().bottom ?? 1e9) < 120) stage.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -65,22 +67,20 @@ function Sheet({ product, initialVariant, inCart, onClose, onAdd }: ModalProps &
       animate={{ y: 0, opacity: 1, scale: 1 }}
       exit={{ y: 30, opacity: 0 }}
       transition={{ type: "spring", bounce: 0.16, duration: 0.55 }}
-      style={{ "--main": v.main, "--second": v.second } as CSSProperties}
     >
       <button type="button" className="icon-btn sheet__close" onClick={onClose} aria-label="Cerrar">
         <Icon name="close" />
       </button>
-      <div className="sheet__stage">
-        <span className="sheet__halo" />
-        <Canvas dpr={[1, 1.75]} gl={{ antialias: true, alpha: true, toneMapping: THREE.NeutralToneMapping }}>
-          <Suspense fallback={null}>
-            <ProductStage product={product} variant={v} number={number || "0"} player={player} detail={5} spin={false} distance={7} />
-          </Suspense>
-          <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={1.6} minPolarAngle={1} maxPolarAngle={2.1} />
-        </Canvas>
-        <p className="sheet__hint">
-          <Icon name="rotate" size={16} /> Arrastra para girarlo
-        </p>
+      <div className="sheet__stage" ref={stage}>
+        <img className="sheet__backdrop" src={photo(product, 600, v)} alt="" aria-hidden="true" />
+        <img className="sheet__photo" src={photo(product, 1200, v)} srcSet={photoSet(product, v)} sizes="(max-width: 900px) 100vw, 540px" width={1200} height={960} alt={`${product.name}, ${v.name.toLowerCase()}`} />
+        {product.custom && (
+          <p className="sheet__print" aria-hidden="true">
+            <small>Tu número</small>
+            <b>{number || "0"}</b>
+            {player && <span>{player}</span>}
+          </p>
+        )}
       </div>
 
       <div className="sheet__info">
@@ -112,23 +112,16 @@ function Sheet({ product, initialVariant, inCart, onClose, onAdd }: ModalProps &
         {product.variants.length > 1 && (
           <div className="field">
             <span className="label">
-              Color · <b>{v.name}</b>
+              {design ? "Diseño" : "Color"} · <b>{v.name}</b>
             </span>
-            <div className="swatches" role="radiogroup" aria-label="Color">
+            <div className="thumbs" role="radiogroup" aria-label={design ? "Diseño" : "Color"}>
               {product.variants.map((x) => (
-                <button
-                  key={x.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={x.id === variantId}
-                  aria-label={x.name}
-                  title={x.name}
-                  className="dot dot--big"
-                  style={{ "--a": x.main, "--b": x.second } as CSSProperties}
-                  onClick={() => setVariantId(x.id)}
-                />
+                <button key={x.id} type="button" role="radio" aria-checked={x.id === variantId} aria-label={x.name} title={x.name} className="thumb" onClick={() => pick(x.id)}>
+                  <img src={photo(product, 600, x)} alt="" width={600} height={480} loading="lazy" decoding="async" />
+                </button>
               ))}
             </div>
+            {design && <p className="muted small">¿Otros colores? Armamos el diseño con los de tu equipo.</p>}
           </div>
         )}
 

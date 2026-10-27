@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import type { CSSProperties, FormEvent } from "react";
+import type { FormEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
-import { BRAND, CATEGORIES, DELIVERY, FREE_SHIPPING } from "../content";
+import { BRAND, CATEGORIES, DELIVERY, FREE_SHIPPING, photo } from "../content";
 import { money, orderMessage, totals, variant, whatsappUrl } from "../cart";
 import type { CartItem, OrderForm } from "../cart";
 import { Icon, WhatsAppIcon } from "./icons";
@@ -107,7 +107,7 @@ export function CartDrawer({ open, onClose, items, setQty, clear }: DrawerProps)
                     ].filter(Boolean);
                     return (
                       <motion.li key={item.key} layout initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}>
-                        <span className="line__swatch" style={{ "--a": v.main, "--b": v.second } as CSSProperties} />
+                        <img className="line__photo" src={photo(product, 600, v)} width={600} height={480} alt="" loading="lazy" decoding="async" />
                         <div className="line__info">
                           <p className="line__name">{product.name}</p>
                           <p className="line__meta">{meta.join(" · ")}</p>

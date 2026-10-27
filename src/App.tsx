@@ -135,7 +135,7 @@ export default function App() {
               <a className="cta" href="#catalogo">
                 Ver catálogo <Icon name="arrow" size={20} />
               </a>
-              <button type="button" className="btn" onClick={() => openProduct("uniforme", "verde")}>
+              <button type="button" className="btn" onClick={() => openProduct("uniforme", "negro")}>
                 <Icon name="team" size={20} /> Armar uniformes
               </button>
             </motion.div>
@@ -179,7 +179,7 @@ export default function App() {
             <h2 className="display">
               Más jugadores, <span className="outline">menos precio</span>
             </h2>
-            <p className="lead">Desde 12 unidades del mismo producto, todas pasan al precio por docena. Puedes mezclar tallas y colores.</p>
+            <p className="lead">Desde 12 unidades del mismo producto, todas pasan al precio por docena. Puedes mezclar tallas.</p>
           </header>
           <div className="dozen__cards">
             {SHOWCASE.map((p) => (
@@ -206,7 +206,7 @@ export default function App() {
             <li>
               <span>01</span>
               <h3>Arma tu carrito</h3>
-              <p>Elige productos, colores y tallas. Las camisetas llevan número y nombre sin costo.</p>
+              <p>Elige productos y tallas. Las camisetas llevan número y nombre sin costo.</p>
             </li>
             <li>
               <span>02</span>
